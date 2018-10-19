@@ -187,7 +187,7 @@ void loop() {
         break;
     }
 
-    delay(50);
+    delay(10);
 
     if (changeDirectionMotor1) {
       // turn forward
@@ -210,14 +210,14 @@ void loop() {
     if ( millis() - startTime1 > changeDirectionAfter1) {
       changeDirectionMotor1 = !changeDirectionMotor1;
      // Serial.println(changeDirectionMotor1);
-      changeDirectionAfter1 = random(8000, 15000);
+      changeDirectionAfter1 = random(10000, 20000);
       //  Serial.println(changeDirectionAfter1);
       startTime1 = millis();
     }
 
     if ( millis() - startTime2 > changeDirectionAfter2) {
       changeDirectionMotor2 = !changeDirectionMotor2;
-      changeDirectionAfter2 = random(9000, 16000);
+      changeDirectionAfter2 = random(11000, 21000);
       startTime2 = millis();
     }
 
