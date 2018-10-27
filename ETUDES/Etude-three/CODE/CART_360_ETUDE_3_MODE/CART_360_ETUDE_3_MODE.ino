@@ -94,29 +94,18 @@ void loop()
    (i.e. if mode ==2 and we press, then mode ==3) ...
 **************************************************************************/
 void chooseMode() {
+  // check if the button is being pressed (HIGH) or not (LOW)
   int buttonVal = digitalRead(BUTTON_MODE_PIN);
 
+  // if the button is being pressed (HIGH)
   if (buttonVal) {
-    // If so, increase the mode.
-      mode = (mode + 1) % 5;
-      delay(300);
-      Serial.println(mode);
+    // increase the mode. I use the modulo function to make sure that the mode varies from 0 to 4.
+    mode = (mode + 1) % 5;
+    // add a delay to encounter time it takes for a user to press and released the button
+    delay(300);
+
+    Serial.println(mode);
   }
-
-
-  // Check if the button has been pressed
-  /*if (buttonState != prevButtonState) {
-    // If so, increase the mode.
-    if (buttonState) {
-      mode++;
-      // If the mode is higher than 4, go back to mode 0.
-      if (mode > 4) {
-        mode = 0;
-      }
-    }
-
-    prevButtonState = buttonState;
-    }*/
 }
 
 /******************SETRGB(): IMPLEMENT *********************************
