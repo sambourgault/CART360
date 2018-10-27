@@ -47,6 +47,7 @@ int countNotes = 0;
 int mode = 0; // start at off
 // array to hold the notes played (for record/play mode)
 int notes [MAX_NOTES];
+// NEW VARIABLES?!
 int prevButtonState = LOW;
 int prevAnalogValue = 0;
 int noteAt = 0;
@@ -75,8 +76,8 @@ void setup()
 void loop()
 {
   chooseMode();
-  setRGB();
-  selectMode();
+  //setRGB();
+  //selectMode();
 }
 /******************CHOOSEMODE(): IMPLEMENT *********************************
    INSTRUCTIONS:
@@ -93,10 +94,18 @@ void loop()
    (i.e. if mode ==2 and we press, then mode ==3) ...
 **************************************************************************/
 void chooseMode() {
-  int buttonState = digitalRead(BUTTON_MODE_PIN);
+  int buttonVal = digitalRead(BUTTON_MODE_PIN);
+
+  if (buttonVal) {
+    // If so, increase the mode.
+      mode = (mode + 1) % 5;
+      delay(300);
+      Serial.println(mode);
+  }
+
 
   // Check if the button has been pressed
-  if (buttonState != prevButtonState) {
+  /*if (buttonState != prevButtonState) {
     // If so, increase the mode.
     if (buttonState) {
       mode++;
@@ -107,7 +116,7 @@ void chooseMode() {
     }
 
     prevButtonState = buttonState;
-  }
+    }*/
 }
 
 /******************SETRGB(): IMPLEMENT *********************************
