@@ -25,9 +25,9 @@
 #define BUTTON_MODE_PIN 2 // Button to change the mode
 
 // constants for RGB LED
-#define LED_PIN_R 5 // R PIN
-#define LED_PIN_G 9 // G PIN
-#define LED_PIN_B 6 // B PIN
+#define LED_PIN_R 9 // R PIN
+#define LED_PIN_G 6 // G PIN
+#define LED_PIN_B 5 // B PIN
 
 // constant for note in (button-resistor ladder on breadboard)
 # define NOTE_IN_PIN A0
@@ -76,7 +76,7 @@ void setup()
 void loop()
 {
   chooseMode();
-  //setRGB();
+  setRGB();
   //selectMode();
 }
 /******************CHOOSEMODE(): IMPLEMENT *********************************
@@ -120,31 +120,37 @@ void chooseMode() {
 **************************************************************************/
 void setRGB()
 {
+  // change the color of the LED depending of the selected mode
   switch (mode) {
+    // mode 0, the LED is off.
     case 0:
       digitalWrite(LED_PIN_R, LOW);
       digitalWrite(LED_PIN_G, LOW);
       digitalWrite(LED_PIN_B, LOW);
       break;
+    // mode 1: the LED is blue
     case 1:
       digitalWrite(LED_PIN_R, LOW);
       digitalWrite(LED_PIN_G, LOW);
       digitalWrite(LED_PIN_B, HIGH);
       break;
+    // mode 2: the LED is red
     case 2:
       digitalWrite(LED_PIN_R, HIGH);
       digitalWrite(LED_PIN_G, LOW);
       digitalWrite(LED_PIN_B, LOW);
       break;
+    // mode 3: the LED is green
     case 3:
       digitalWrite(LED_PIN_R, LOW);
       digitalWrite(LED_PIN_G, HIGH);
       digitalWrite(LED_PIN_B, LOW);
       break;
+    // mode 4: the led is purple (a mix of blue and red)
     case 4:
       digitalWrite(LED_PIN_R, HIGH);
-      digitalWrite(LED_PIN_G, HIGH);
-      digitalWrite(LED_PIN_B, LOW);
+      digitalWrite(LED_PIN_G, LOW);
+      digitalWrite(LED_PIN_B, HIGH);
       break;
   }
 }
