@@ -25,9 +25,9 @@
 #define BUTTON_MODE_PIN 2 // Button to change the mode
 
 // constants for RGB LED
-#define LED_PIN_R 9 // R PIN
-#define LED_PIN_G 6 // G PIN
-#define LED_PIN_B 5 // B PIN
+#define LED_PIN_R 5 // R PIN
+#define LED_PIN_G 9 // G PIN
+#define LED_PIN_B 6 // B PIN
 
 // constant for note in (button-resistor ladder on breadboard)
 # define NOTE_IN_PIN A0
@@ -36,7 +36,7 @@
 #define MAX_NOTES 16
 
 // a constant for duration
-const int duration = 300;
+const int duration = 200;
 
 // constant for pin to output for buzzer
 #define BUZZER_PIN 3 // PWM
@@ -52,7 +52,6 @@ int notes [MAX_NOTES];
 int noteAt = 0;
 int increment = 1;
 
-
 /*************************************************************************/
 
 
@@ -61,7 +60,6 @@ int increment = 1;
 void setup()
 {
   pinMode(BUTTON_MODE_PIN, INPUT);
-  Serial.begin(9600);
 }
 
 /**********************LOOP() DO NOT CHANGE *******************************
@@ -298,7 +296,7 @@ void looper()
   } else if (noteAt <= 0) {
     increment = 1;
   }
-
+  
   // add delay between each tone
   delay(duration);
 }
