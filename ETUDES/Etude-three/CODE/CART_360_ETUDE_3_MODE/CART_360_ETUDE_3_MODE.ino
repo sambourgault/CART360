@@ -36,7 +36,7 @@
 #define MAX_NOTES 16
 
 // a constant for duration
-const int duration = 200;
+const int duration = 300;
 
 // constant for pin to output for buzzer
 #define BUZZER_PIN 3 // PWM
@@ -48,9 +48,9 @@ int mode = 0; // start at off
 // array to hold the notes played (for record/play mode)
 int notes [MAX_NOTES];
 // NEW VARIABLES?!
-int prevButtonState = LOW;
-int prevAnalogValue = 0;
 int noteAt = 0;
+int increment = 1;
+
 
 /*************************************************************************/
 
@@ -77,7 +77,7 @@ void loop()
 {
   chooseMode();
   setRGB();
-  //selectMode();
+  selectMode();
 }
 /******************CHOOSEMODE(): IMPLEMENT *********************************
    INSTRUCTIONS:
@@ -198,11 +198,12 @@ void selectMode()
 **************************************************************************/
 void reset()
 {
+  // go through the array and reset the value of each note to 0
   for (int i = 0; i < countNotes; i++) {
     notes[i] = 0;
   }
+  // set the counter back to 0
   countNotes = 0;
-
 }
 /******************LIVE(): IMPLEMENT **************************************
    INSTRUCTIONS:
@@ -214,12 +215,16 @@ void reset()
 **************************************************************************/
 void live()
 {
+  // read the value from the ladder
   int analogValue = analogRead(NOTE_IN_PIN);
-  //digitalWrite(BUZZER_PIN, analogValue);
-  // if (analogValue > 1020){
 
-  // }
-  tone(BUZZER_PIN, analogValue, duration);
+  if (analogValue != 0) {
+    tone(BUZZER_PIN, analogValue, duration);
+    Serial.println(analogValue);
+
+    // not sure if I need a delay here
+    delay(duration);
+  }
 }
 /******************RECORD(): IMPLEMENT **********************************
    INSTRUCTIONS:
@@ -232,15 +237,19 @@ void live()
 **************************************************************************/
 void record()
 {
+  // read the value from the ladder
   int analogValue = analogRead(NOTE_IN_PIN);
-  if (countNotes < 16 && analogValue != 0 && abs(analogValue - prevAnalogValue) > 2) {
-    notes[countNotes] = analogValue;
-    countNotes++;
-    prevAnalogValue = analogValue;
-  }
+
+  // send a tone to the piezo
   tone(BUZZER_PIN, analogValue, duration);
 
-
+  // record a maximum of 16 notes in the array
+  if (countNotes < MAX_NOTES && analogValue != 0) {
+    notes[countNotes] = analogValue;
+    countNotes++;
+    // add some delay between each tone
+    delay(duration);
+  }
 }
 /******************PLAY(): IMPLEMENT ************************************
    INSTRUCTIONS:
@@ -254,12 +263,16 @@ void record()
 **************************************************************************/
 void play()
 {
-  tone(BUZZER_PIN, notes[noteAt]);
+  // send a tone to the piezo
+  tone(BUZZER_PIN, notes[noteAt], duration);
+
+  // increment noteAt
   noteAt++;
+  // set noteAt back to zero when it reaches the amount of notes stored in the array
   if (noteAt >= countNotes) {
     noteAt = 0;
   }
-
+  // add some delay between each tone
   delay(duration);
 }
 /******************LOOPMODE(): IMPLEMENT *********************************
@@ -274,12 +287,21 @@ void play()
 **************************************************************************/
 void looper()
 {
-  tone(BUZZER_PIN, notes[noteAt]);
-  noteAt++;
-  if (noteAt >= countNotes) {
-    noteAt = 0;
+  // send a tone to the piezo
+  tone(BUZZER_PIN, notes[noteAt], duration);
+
+  // increment noteAt
+  noteAt += increment;
+
+  // change the increment direction when it reaches one extremity of the array.
+  if (noteAt >= countNotes - 1) {
+    increment = -1;
+  } else if (noteAt <= 0) {
+    increment = 1;
   }
 
+  Serial.println(noteAt);
+  // add delay between each tone
   delay(duration);
 }
 
