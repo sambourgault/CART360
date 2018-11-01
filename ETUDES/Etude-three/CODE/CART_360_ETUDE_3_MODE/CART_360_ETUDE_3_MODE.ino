@@ -203,6 +203,9 @@ void reset()
   }
   // set the counter back to 0
   countNotes = 0;
+  // set noteAt and increment to default values
+  noteAt = 0;
+  increment = 1;
 }
 /******************LIVE(): IMPLEMENT **************************************
    INSTRUCTIONS:
@@ -239,8 +242,10 @@ void record()
   // read the value from the ladder
   int analogValue = analogRead(NOTE_IN_PIN);
 
-  // send a tone to the piezo
-  tone(BUZZER_PIN, analogValue, duration);
+  if (analogValue != 0) {
+    // send a tone to the piezo
+    tone(BUZZER_PIN, analogValue, duration);
+  }
 
   // record a maximum of 16 notes in the array
   if (countNotes < MAX_NOTES && analogValue != 0) {
@@ -302,5 +307,4 @@ void looper()
   // add delay between each tone
   delay(duration);
 }
-
 /**************************************************************************/

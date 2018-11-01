@@ -20,14 +20,17 @@
    PROVIDE COMMENTS FOR ANY OF THE CODE IMPLEMENTED
    GOOD LUCK!
 */
+
+#include "pitches.h"
+
 /**** CONSTANTS ********************************************************/
 
 #define BUTTON_MODE_PIN 2 // Button to change the mode
 
 // constants for RGB LED
-#define LED_PIN_R 5 // R PIN
-#define LED_PIN_G 9 // G PIN
-#define LED_PIN_B 6 // B PIN
+#define LED_PIN_R 9 // R PIN
+#define LED_PIN_G 6 // G PIN
+#define LED_PIN_B 5 // B PIN
 
 // constant for note in (button-resistor ladder on breadboard)
 # define NOTE_IN_PIN A0
@@ -59,6 +62,7 @@ int increment = 1;
 // Declare pin mode for the single digital input
 void setup()
 {
+  Serial.begin(9600);
   pinMode(BUTTON_MODE_PIN, INPUT);
 }
 
@@ -201,6 +205,9 @@ void reset()
   }
   // set the counter back to 0
   countNotes = 0;
+  // set noteAt and increment to default values
+  noteAt = 0;
+  increment = 1;
 }
 /******************LIVE(): IMPLEMENT **************************************
    INSTRUCTIONS:
@@ -216,7 +223,7 @@ void live()
   int analogValue = analogRead(NOTE_IN_PIN);
 
   if (analogValue != 0) {
-    tone(BUZZER_PIN, analogValue, duration);
+    tone(BUZZER_PIN, transformToNote(analogValue), duration);
     Serial.println(analogValue);
 
     // not sure if I need a delay here
@@ -237,12 +244,14 @@ void record()
   // read the value from the ladder
   int analogValue = analogRead(NOTE_IN_PIN);
 
-  // send a tone to the piezo
-  tone(BUZZER_PIN, analogValue, duration);
+  if (analogValue != 0) {
+    // send a tone to the piezo
+    tone(BUZZER_PIN, transformToNote(analogValue), duration);
+  }
 
   // record a maximum of 16 notes in the array
   if (countNotes < MAX_NOTES && analogValue != 0) {
-    notes[countNotes] = analogValue;
+    notes[countNotes] = transformToNote(analogValue);
     countNotes++;
     // add some delay between each tone
     delay(duration);
@@ -296,9 +305,32 @@ void looper()
   } else if (noteAt <= 0) {
     increment = 1;
   }
-  
+
   // add delay between each tone
   delay(duration);
+}
+/******************TRANSFORMTONOTE(): IMPLEMENT *********************************
+   INSTRUCTIONS:
+   this function will playback any notes stored in the array that were recorded
+   in the previous mode
+   SO: you need to go through the array of values (be careful - the user may not have put in MAX_NOTES)
+   READ values IN ANY ORDERING (You MUST use the array - but you can determine your own sequence)
+   AND output each note to the buzzer using the tone() function
+   ALSO: as long as we are in this mode, the notes are played over and over again
+   BE CAREFUL: make sure you allow for the user to get to another mode from the mode button...
+**************************************************************************/
+int transformToNote(int value) {
+  if (value > 1000) {
+    return NOTE_B5;
+  } else if (value > 900 && value < 960) {
+    return NOTE_A5;
+  } else if (value > 450 && value < 540) {
+    return NOTE_G4;
+  } else if (value > 50 && value < 110) {
+    return NOTE_FS4;
+  } else if (value < 20) {
+    return NOTE_E4;
+  }
 }
 
 /**************************************************************************/
