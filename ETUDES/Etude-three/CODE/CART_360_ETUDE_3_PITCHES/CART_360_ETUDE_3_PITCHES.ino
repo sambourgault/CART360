@@ -311,13 +311,11 @@ void looper()
 }
 /******************TRANSFORMTONOTE(): IMPLEMENT *********************************
    INSTRUCTIONS:
-   this function will playback any notes stored in the array that were recorded
-   in the previous mode
-   SO: you need to go through the array of values (be careful - the user may not have put in MAX_NOTES)
-   READ values IN ANY ORDERING (You MUST use the array - but you can determine your own sequence)
-   AND output each note to the buzzer using the tone() function
-   ALSO: as long as we are in this mode, the notes are played over and over again
-   BE CAREFUL: make sure you allow for the user to get to another mode from the mode button...
+   this function will transform the analog values incoming from the ladder into 
+   specific notes from the E4 minor scale. Note that intervals are used to detected
+   the note that has been played. After observations, depending on how the user 
+   presses a button, the analog input varies slightly, so using intervals overcomes
+   this issue.
 **************************************************************************/
 int transformToNote(int value) {
   if (value > 1000) {
