@@ -308,3 +308,30 @@ void looper()
   delay(duration);
 }
 /**************************************************************************/
+/****************************************** PART THREE ********************************************
+  The ladder involves five different resistances (10kΩ, 1kΩ, 10kΩ, 100kΩ and 1MΩ) connected in series. 
+  Each time the user presses on a button, it allows the current coming from the 5V Arduino output 
+  to flow toward the ground passing through between one to five resistance. The analog reading is 
+  taken before the first 10kΩ resistance that is directly connected to the ground. Therefore, when 
+  the first button is pressed, the analog reading returns 1023, the numerical equivalent to 5V since 
+  there is no drop of potential between the 5V source and the point of reading. When the second button 
+  is pressed, the current passes through the 1kΩ resistance before being read. Voltage division occurs 
+  between the 10kΩ resistance connected to the ground and the first 1kΩ resistance, but the drop in 
+  potential is small since 1kΩ is ten times smaller than 10kΩ. The returned analog value is around 931. 
+  When the third button is pressed, the current passes through 11kΩ before being read which returns a 
+  value of 486. The same goes for the fourth and the fifth buttons that allow the current to pass 
+  through 111kΩ and 1111kΩ (1.111MΩ) and output values of 82 and 7 respectively. These specific values 
+  can then be associated with different events in the Arduino code.
+
+  The mode selector involves a button connected to the Arduino 5V output and the ground through a 10kΩ 
+  resistance. A digital reading is being done at the exit point of the button. When the button is open, 
+  the digital reading is 0V or LOW as expressed in the code. When the button is pressed, the current 
+  flows and the exit point of the button reaches 5V. In this state, the digital reading is HIGH. In the 
+  program, each time the program sees HIGH, it increases the mode value by one unit, evolving from 0 to 
+  4 and back to 0 once it reaches 4.
+
+  Finally, once the input is read. The tone function through a PWM digital pin send equivalent voltage 
+  to the piezo electric crystal. This voltage indices mechanical vibrations in the crystal which creates 
+  audible waves in the perceptive range for human ears.
+
+ ******************************************************************************************************/
