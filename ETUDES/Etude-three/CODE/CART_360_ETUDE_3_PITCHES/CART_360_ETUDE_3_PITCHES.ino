@@ -312,10 +312,10 @@ void looper()
 /******************TRANSFORMTONOTE(): IMPLEMENT *********************************
    INSTRUCTIONS:
    this function will transform the analog values incoming from the ladder into 
-   specific notes from the E4 minor scale. Note that intervals are used to detected
-   the note that has been played. After observations, depending on how the user 
-   presses a button, the analog input varies slightly, so using intervals overcomes
-   this issue.
+   specific notes from the E minor scale (E4, FS4, G4, A5 and B5). Note that intervals 
+   are used to detected the note that has been played. After observations, depending 
+   on how the user presses a button, the analog input varies slightly, so using 
+   intervals overcomes this issue.
 **************************************************************************/
 int transformToNote(int value) {
   if (value > 1000) {
