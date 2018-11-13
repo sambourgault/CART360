@@ -44,7 +44,7 @@ const int duration = 200;
 // constant for input from photo cell
 #define PHOTO_PIN A1
 
-// constant for size of running samples array (for averging)
+// constant for size of running samples array (for averaging)
 #define RUNNING_SAMPLES 16
 
 // max pressing time
@@ -259,15 +259,15 @@ void live()
   // IMPLEMENT live()
   offsetFrequency = getPhotoFrequency();
   // output sound
-   // read the value from the ladder
+  // read the value from the ladder
   int analogValue = analogRead(NOTE_IN_PIN);
 
   if (analogValue != 0) {
-    tone(BUZZER_PIN, analogValue + offsetFrequency, duration/2);
+    tone(BUZZER_PIN, analogValue + offsetFrequency, duration / 2);
     //Serial.println(analogValue);
 
     // not sure if I need a delay here
-    delay(duration/2);
+    delay(duration / 2);
   }
 }
 
@@ -330,6 +330,7 @@ void recordWithDuration()
         This means we are pressing on a note button
     */
     if (testNote > theAdjuster && (timePassed < MAX_PRESS_TIME)) {
+      Serial.println("yoo");
       /*** STATE AA::: *******************************************
           IF the boolean is false it means we have just started to press the button
           YOU now need to implement the function below which will set up all things
@@ -337,8 +338,12 @@ void recordWithDuration()
       */
       if (activeNoteButton == false)
       {
+        Serial.println("button was pressed");
         /*** FUNCTION TO IMPLEMENT ***/
         startUpTimer();
+        Serial.print("timer: ");
+        Serial.println(startTime);
+        Serial.println(timePassed);
 
       }
       /*** STATE AA::: *******************************************
@@ -350,6 +355,7 @@ void recordWithDuration()
       */
       else
       { // update the timer
+        Serial.println("still pressing");
         /*** FUNCTION TO IMPLEMENT ***/
         updateTimer();
         /*** FUNCTION TO IMPLEMENT ***/
@@ -366,8 +372,9 @@ void recordWithDuration()
     */
     else if (testNote > theAdjuster && (timePassed > MAX_PRESS_TIME))
     {
-
+      Serial.println("pressed too long");
       // WRITE the code to turn OFF the buzzer
+      noTone(BUZZER_PIN);
     }
     /*** STATE C::: *******************************************
        IF the testNote is < min AND the boolean is true
@@ -375,13 +382,11 @@ void recordWithDuration()
        YOU: need to implement the function to update the arrays etc
     */
     else if ((testNote <= theAdjuster && activeNoteButton == true) ) {
+      Serial.println("stop pressing");
       /*** FUNCTION TO IMPLEMENT ***/
       updateArraysWithNoteAndTimings();
     }
-
-
   }
-
 }
 
 /******************STARTUPTIMER(): IMPLEMENT *********************************
@@ -391,7 +396,9 @@ void recordWithDuration()
 void startUpTimer()
 {
   //IMPLEMENT
-
+  startTime = millis();
+  timePassed = millis() - startTime;
+  activeNoteButton = true;
 }
 /******************UPDATETIMER(): IMPLEMENT *********************************
    INSTRUCTIONS:
@@ -401,6 +408,7 @@ void updateTimer()
 {
 
   //IMPLEMENT
+  timePassed = millis() - startTime;
 
 }
 /******************PLAYCURRENTNOTE(): IMPLEMENT *********************************
@@ -412,7 +420,7 @@ void updateTimer()
 void playCurrentNote()
 {
   //IMPLEMENT
-
+  tone(BUZZER_PIN, testNote + offsetFrequency, duration / 2);
 }
 /******************UPDATEARRAYSWITHNOTEANDTIMINGS(): IMPLEMENT *********************************
    INSTRUCTIONS:
@@ -425,6 +433,11 @@ void playCurrentNote()
 void updateArraysWithNoteAndTimings()
 {
   //IMPLEMENT
+  notes[countNotes] = testNote + averageOffsetFreq;
+  durations[countNotes] = timePassed;
+  countNotes++;
+  activeNoteButton = false;
+
 }
 /******************GETPHOTOFREQUENCY(): IMPLEMENT *********************************
    INSTRUCTIONS:
@@ -435,13 +448,13 @@ int getPhotoFrequency()
 {
   //IMPLEMENT
   int freqTemp = analogRead(PHOTO_PIN);
-  Serial.print("photo freq: ");
-  Serial.println(freqTemp);
+  //Serial.print("photo freq: ");
+  //Serial.println(freqTemp);
   delay(100);
   //return map(freqTemp, 0, 1023, 0, 255);
   return freqTemp;
-  
-   
+
+
 }
 
 /******************GETRUNNINGAVERAGE(): IMPLEMENT *********************************
@@ -452,6 +465,22 @@ int getPhotoFrequency()
 int getRunningAverage()
 {
   //IMPLEMENT
+  runningAverageBuffer[nextCount] = getPhotoFrequency();
+
+  nextCount++;
+  if (nextCount >= RUNNING_SAMPLES)
+    nextCount = 0;
+
+  int currentSum = 0;
+
+  for (int i = 0; i < RUNNING_SAMPLES; i++) {
+    currentSum += runningAverageBuffer[i];
+  }
+
+  int averageVal = currentSum / RUNNING_SAMPLES;
+  delay(100);
+
+  return averageVal;
 
 }
 /******************COLORLED(): IMPLEMENT *********************************
@@ -478,6 +507,14 @@ void colorLED(int col)
 void playWithDuration()
 {
   //IMPLEMENT
+  for (int i = 0; i < countNotes; i++) {
+    tone(BUZZER_PIN, notes[i], durations[i]);
+    delay(durations[i]);
+    //check if mode button is pressed
+    if (digitalRead(BUTTON_MODE_PIN) == HIGH) {
+      break;
+    }
+  }
 }
 
 /******************PLAY(): SOLUTION: ETUDE_2 ************************************
@@ -533,10 +570,10 @@ void record()
 
 /******************TRANSFORMTONOTE() *************************************
    INSTRUCTIONS:
-   this function will transform the analog values incoming from the ladder into 
-   specific notes from the E minor scale (E4, FS4, G4, A5 and B5). Note that intervals 
-   are used to detected the note that has been played. After observations, depending 
-   on how the user presses a button, the analog input varies slightly, so using 
+   this function will transform the analog values incoming from the ladder into
+   specific notes from the E minor scale (E4, FS4, G4, A5 and B5). Note that intervals
+   are used to detected the note that has been played. After observations, depending
+   on how the user presses a button, the analog input varies slightly, so using
    intervals overcomes this issue.
 **************************************************************************/
 /*int transformToNote(int value) {
@@ -551,6 +588,6 @@ void record()
   } else if (value < 20) {
     return NOTE_E4;
   }
-}*/
+  }*/
 
 /**************************************************************************/
