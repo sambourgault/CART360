@@ -93,6 +93,7 @@ int nextCount = 0;
 // Declare pin mode for the single digital input
 void setup()
 {
+  Serial.begin(9600);
   pinMode(BUTTON_MODE_PIN, INPUT);
 }
 
@@ -262,11 +263,11 @@ void live()
   int analogValue = analogRead(NOTE_IN_PIN);
 
   if (analogValue != 0) {
-    tone(BUZZER_PIN, transformToNote(analogValue), duration);
-    Serial.println(analogValue);
+    tone(BUZZER_PIN, analogValue + offsetFrequency, duration/2);
+    //Serial.println(analogValue);
 
     // not sure if I need a delay here
-    delay(duration);
+    delay(duration/2);
   }
 }
 
@@ -433,6 +434,14 @@ void updateArraysWithNoteAndTimings()
 int getPhotoFrequency()
 {
   //IMPLEMENT
+  int freqTemp = analogRead(PHOTO_PIN);
+  Serial.print("photo freq: ");
+  Serial.println(freqTemp);
+  delay(100);
+  //return map(freqTemp, 0, 1023, 0, 255);
+  return freqTemp;
+  
+   
 }
 
 /******************GETRUNNINGAVERAGE(): IMPLEMENT *********************************
@@ -530,7 +539,7 @@ void record()
    on how the user presses a button, the analog input varies slightly, so using 
    intervals overcomes this issue.
 **************************************************************************/
-int transformToNote(int value) {
+/*int transformToNote(int value) {
   if (value > 1000) {
     return NOTE_B5;
   } else if (value > 900 && value < 960) {
@@ -542,6 +551,6 @@ int transformToNote(int value) {
   } else if (value < 20) {
     return NOTE_E4;
   }
-}
+}*/
 
 /**************************************************************************/
