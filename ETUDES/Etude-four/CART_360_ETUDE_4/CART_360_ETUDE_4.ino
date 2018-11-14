@@ -56,6 +56,7 @@ int countNotes = 0;
 // array to hold the notes played (for record/play mode)
 int notes [MAX_NOTES];
 int mode = 0; // start at off
+
 /******** VARIABLES FOR ETUDE 4 *****************************************************/
 // NEW FOR ETUDE 4: array to hold durations
 // will be a parallel array to the notes array -
@@ -256,17 +257,16 @@ void reset()
 **************************************************************************/
 void live()
 {
-  // IMPLEMENT live()
+  // IMPLEMENT
+  // save the photocell frequency on a variable
   offsetFrequency = getPhotoFrequency();
-  // output sound
-  // read the value from the ladder
+  // read the value from the combo ladder
   int analogValue = analogRead(NOTE_IN_PIN);
 
+  // if the value is not null, output sound
   if (analogValue != 0) {
     tone(BUZZER_PIN, analogValue + offsetFrequency, duration / 2);
-    //Serial.println(analogValue);
-
-    // not sure if I need a delay here
+    // wait for the sound to finish
     delay(duration / 2);
   }
 }
@@ -343,8 +343,6 @@ void recordWithDuration()
         startUpTimer();
         Serial.print("timer: ");
         Serial.println(startTime);
-        Serial.println(timePassed);
-
       }
       /*** STATE AA::: *******************************************
            IF the boolean is true it means we are continuing to press the button
@@ -396,8 +394,11 @@ void recordWithDuration()
 void startUpTimer()
 {
   //IMPLEMENT
+  // set startTime to the current time since the program has launched
   startTime = millis();
+  // set timePassed to the time in millisecond since the last startTime was defined
   timePassed = millis() - startTime;
+  // make sure the active button state is now true since the button is being pressed
   activeNoteButton = true;
 }
 /******************UPDATETIMER(): IMPLEMENT *********************************
@@ -406,8 +407,8 @@ void startUpTimer()
 **************************************************************************/
 void updateTimer()
 {
-
   //IMPLEMENT
+  // set timePassed to the time in millisecond since the last startTime was defined
   timePassed = millis() - startTime;
 
 }
@@ -420,6 +421,7 @@ void updateTimer()
 void playCurrentNote()
 {
   //IMPLEMENT
+  // play the current note and add the offset frequency due to the photocell
   tone(BUZZER_PIN, testNote + offsetFrequency, duration / 2);
 }
 /******************UPDATEARRAYSWITHNOTEANDTIMINGS(): IMPLEMENT *********************************
@@ -433,11 +435,14 @@ void playCurrentNote()
 void updateArraysWithNoteAndTimings()
 {
   //IMPLEMENT
+  // store the note that was released into the notes array
   notes[countNotes] = testNote + averageOffsetFreq;
+  // store the duration of the note that got released in the durations array
   durations[countNotes] = timePassed;
-  countNotes++;
+  // set the active button state to false since the button has been released
   activeNoteButton = false;
-
+  // increment the counter in order to get ready for the next note to come
+  countNotes++;
 }
 /******************GETPHOTOFREQUENCY(): IMPLEMENT *********************************
    INSTRUCTIONS:
@@ -447,14 +452,14 @@ void updateArraysWithNoteAndTimings()
 int getPhotoFrequency()
 {
   //IMPLEMENT
-  int freqTemp = analogRead(PHOTO_PIN);
+  // read the anlaog input from the photocell
+  activeFrequency = analogRead(PHOTO_PIN);
   //Serial.print("photo freq: ");
   //Serial.println(freqTemp);
+  
   delay(100);
   //return map(freqTemp, 0, 1023, 0, 255);
-  return freqTemp;
-
-
+  return activeFrequency;
 }
 
 /******************GETRUNNINGAVERAGE(): IMPLEMENT *********************************
@@ -508,7 +513,11 @@ void playWithDuration()
 {
   //IMPLEMENT
   for (int i = 0; i < countNotes; i++) {
+    // change the LED intensity according to the note frequency
+    colorLED(map(notes[i], 0, 2*1024, 0, 255);
+    // play the tone
     tone(BUZZER_PIN, notes[i], durations[i]);
+    // wait for the tone to be done
     delay(durations[i]);
     //check if mode button is pressed
     if (digitalRead(BUTTON_MODE_PIN) == HIGH) {
@@ -529,7 +538,6 @@ void playWithDuration()
 **************************************************************************/
 void play()
 {
-
   for (int i = 0; i < countNotes; i++)
   {
     /* https://www.arduino.cc/en/Reference/Tone */
@@ -552,7 +560,6 @@ void play()
 ********************************************************************************/
 void record()
 {
-
   if (countNotes < MAX_NOTES)
   {
     // add a note to the array if have a value
