@@ -265,7 +265,7 @@ void live()
 
   // if the value is not null, output sound
   if (analogValue != 0) {
-    tone(BUZZER_PIN, analogValue + offsetFrequency, duration / 2);
+    tone(BUZZER_PIN, analogValue + offsetFrequency, 100);
     // wait for the sound to finish
     delay(duration / 2);
   }
@@ -456,7 +456,7 @@ int getPhotoFrequency()
   activeFrequency = analogRead(PHOTO_PIN);
   //Serial.print("photo freq: ");
   //Serial.println(freqTemp);
-  
+
   delay(100);
   //return map(freqTemp, 0, 1023, 0, 255);
   return activeFrequency;
@@ -470,23 +470,25 @@ int getPhotoFrequency()
 int getRunningAverage()
 {
   //IMPLEMENT
+  // adding the current photocell frequency in the running average array
   runningAverageBuffer[nextCount] = getPhotoFrequency();
 
+  // incrementing the nextCount counter for the next value
   nextCount++;
+  // if the counter is greater than the maximum amount of samples, set it back to 0
   if (nextCount >= RUNNING_SAMPLES)
     nextCount = 0;
 
+  // add together the sampls in the running average array
   int currentSum = 0;
-
   for (int i = 0; i < RUNNING_SAMPLES; i++) {
     currentSum += runningAverageBuffer[i];
   }
-
+  // set the average to the sum divided by the amount of samples in the array
   int averageVal = currentSum / RUNNING_SAMPLES;
+  
   delay(100);
-
   return averageVal;
-
 }
 /******************COLORLED(): IMPLEMENT *********************************
    INSTRUCTIONS:
@@ -514,7 +516,8 @@ void playWithDuration()
   //IMPLEMENT
   for (int i = 0; i < countNotes; i++) {
     // change the LED intensity according to the note frequency
-    colorLED(map(notes[i], 0, 2*1024, 0, 255);
+    Serial.println(map(notes[i], 0, 2 * 1024, 0, 255));
+    colorLED(map(notes[i], 0, 2 * 1024, 0, 255));
     // play the tone
     tone(BUZZER_PIN, notes[i], durations[i]);
     // wait for the tone to be done
