@@ -36,7 +36,7 @@
 #define MAX_NOTES 16
 
 // a constant for duration
-const int duration = 200;
+const int duration = 100;
 
 // constant for pin to output for buzzer
 #define BUZZER_PIN 3 // PWM
@@ -258,16 +258,19 @@ void reset()
 void live()
 {
   // IMPLEMENT
-  // save the photocell frequency on a variable
+  // handle a bit of noise
+  int theAdjuster = 5;
+  // save the photocell frequency in a variable
   offsetFrequency = getPhotoFrequency();
   // read the value from the combo ladder
-  int analogValue = analogRead(NOTE_IN_PIN);
+  testNote = analogRead(NOTE_IN_PIN);
+  //Serial.println(testNote);
 
-  // if the value is not null, output sound
-  if (analogValue != 0) {
-    tone(BUZZER_PIN, analogValue + offsetFrequency, 100);
+  // if the value is greater than the adjuster, output sound
+  if (testNote > 5) {
+    tone(BUZZER_PIN, testNote + offsetFrequency, duration);
     // wait for the sound to finish
-    delay(duration / 2);
+    delay(duration);
   }
 }
 
@@ -311,7 +314,7 @@ void loopMode()
    to the user pressing the respective buttons
    AND will STORE up to 16 consecutive notes in an array.
    It will ALSO use a timer to keep track of how long the current note button has been pressed
-   It will ALSO sample the photocell value to be used live as well as well as calling the function to calculate
+   It will ALSO sample the photocell value to be used live as well as calling the function to calculate
    the running average of the photocell value
    SO:I have implemented a basic framework for you to follow - the basic state machine.
    YOUR JOB is to implement the NEW functions that get called within the framework...
@@ -319,18 +322,20 @@ void loopMode()
 void recordWithDuration()
 {
   // to handle a little bit of noise
-  int theAdjuster = 8;
+  int theAdjuster = 5;
   // check we have not stored more than 16 notes
   if (countNotes < MAX_NOTES)
   {
     // read in the value from button press
     testNote = analogRead(NOTE_IN_PIN);
+    //Serial.print("note ");
+    //Serial. println(testNote);
     /*** STATE A::: *******************************************
         IF the testNote is > min AND the timer has not reached 5 secs:
         This means we are pressing on a note button
     */
     if (testNote > theAdjuster && (timePassed < MAX_PRESS_TIME)) {
-      Serial.println("yoo");
+      //Serial.println("yoo");
       /*** STATE AA::: *******************************************
           IF the boolean is false it means we have just started to press the button
           YOU now need to implement the function below which will set up all things
@@ -338,11 +343,10 @@ void recordWithDuration()
       */
       if (activeNoteButton == false)
       {
-        Serial.println("button was pressed");
+        //Serial.println("button was pressed");
         /*** FUNCTION TO IMPLEMENT ***/
+        // starting the timer
         startUpTimer();
-        Serial.print("timer: ");
-        Serial.println(startTime);
       }
       /*** STATE AA::: *******************************************
            IF the boolean is true it means we are continuing to press the button
@@ -352,8 +356,10 @@ void recordWithDuration()
            3/ get the current running average
       */
       else
-      { // update the timer
-        Serial.println("still pressing");
+      {
+        // saving the current note into active frequency
+        activeFrequency = testNote;
+        // update the timer
         /*** FUNCTION TO IMPLEMENT ***/
         updateTimer();
         /*** FUNCTION TO IMPLEMENT ***/
@@ -370,7 +376,7 @@ void recordWithDuration()
     */
     else if (testNote > theAdjuster && (timePassed > MAX_PRESS_TIME))
     {
-      Serial.println("pressed too long");
+      //Serial.println("pressed too long");
       // WRITE the code to turn OFF the buzzer
       noTone(BUZZER_PIN);
     }
@@ -422,7 +428,9 @@ void playCurrentNote()
 {
   //IMPLEMENT
   // play the current note and add the offset frequency due to the photocell
-  tone(BUZZER_PIN, testNote + offsetFrequency, duration / 2);
+  tone(BUZZER_PIN, testNote + offsetFrequency, 100);
+  // wait for the tone to be done
+  delay(100);
 }
 /******************UPDATEARRAYSWITHNOTEANDTIMINGS(): IMPLEMENT *********************************
    INSTRUCTIONS:
@@ -436,7 +444,7 @@ void updateArraysWithNoteAndTimings()
 {
   //IMPLEMENT
   // store the note that was released into the notes array
-  notes[countNotes] = testNote + averageOffsetFreq;
+  notes[countNotes] = activeFrequency + averageOffsetFreq;
   // store the duration of the note that got released in the durations array
   durations[countNotes] = timePassed;
   // set the active button state to false since the button has been released
@@ -451,8 +459,8 @@ void updateArraysWithNoteAndTimings()
 **************************************************************************/
 int getPhotoFrequency()
 {
- // return the analog input scaled to my desired range of influence
- return map(analogRead(PHOTO_PIN), 0, 1023, 440, 1023);
+  // return the analog input scaled to my desired range of influence
+  return map(analogRead(PHOTO_PIN), 0, 1023, 440, 1023);
 }
 
 /******************GETRUNNINGAVERAGE(): IMPLEMENT *********************************
@@ -463,24 +471,21 @@ int getPhotoFrequency()
 int getRunningAverage()
 {
   //IMPLEMENT
-  // adding the current photocell frequency in the running average array
+  // adding the current photocell frequency to the running average array
   runningAverageBuffer[nextCount] = getPhotoFrequency();
-
   // incrementing the nextCount counter for the next value
   nextCount++;
   // if the counter is greater than the maximum amount of samples, set it back to 0
   if (nextCount >= RUNNING_SAMPLES)
     nextCount = 0;
 
-  // add together the sampls in the running average array
+  // add together the samples in the running average array
   int currentSum = 0;
   for (int i = 0; i < RUNNING_SAMPLES; i++) {
     currentSum += runningAverageBuffer[i];
   }
   // set the average to the sum divided by the amount of samples in the array
   int averageVal = currentSum / RUNNING_SAMPLES;
-  
-  delay(100);
   return averageVal;
 }
 /******************COLORLED(): IMPLEMENT *********************************
@@ -509,12 +514,14 @@ void playWithDuration()
   //IMPLEMENT
   for (int i = 0; i < countNotes; i++) {
     // change the LED intensity according to the note frequency
-    Serial.println(map(notes[i], 0, 2 * 1024, 0, 255));
-    colorLED(map(notes[i], 0, 2 * 1024, 0, 255));
+    // I decided to map the lowest possible value to 0 and the largest to 255
+    colorLED(map(notes[i], 448, 2 * 1024, 0, 255));
     // play the tone
     tone(BUZZER_PIN, notes[i], durations[i]);
     // wait for the tone to be done
     delay(durations[i]);
+    // add a little pause between each tone
+    delay(100);
     //check if mode button is pressed
     if (digitalRead(BUTTON_MODE_PIN) == HIGH) {
       break;
@@ -570,27 +577,3 @@ void record()
     }
   }
 }
-
-/******************TRANSFORMTONOTE() *************************************
-   INSTRUCTIONS:
-   this function will transform the analog values incoming from the ladder into
-   specific notes from the E minor scale (E4, FS4, G4, A5 and B5). Note that intervals
-   are used to detected the note that has been played. After observations, depending
-   on how the user presses a button, the analog input varies slightly, so using
-   intervals overcomes this issue.
-**************************************************************************/
-/*int transformToNote(int value) {
-  if (value > 1000) {
-    return NOTE_B5;
-  } else if (value > 900 && value < 960) {
-    return NOTE_A5;
-  } else if (value > 450 && value < 540) {
-    return NOTE_G4;
-  } else if (value > 50 && value < 110) {
-    return NOTE_FS4;
-  } else if (value < 20) {
-    return NOTE_E4;
-  }
-  }*/
-
-/**************************************************************************/
