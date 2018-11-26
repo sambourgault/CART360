@@ -54,7 +54,7 @@ void setup()
 void loop() 
 {
   // Loop through all eight pins.
-  for (byte pin=0; pin<3; pin++)
+  for (byte pin=0; pin<5; pin++)
   {
     selectMuxPin(pin); // Select one at a time
     int inputValue = analogRead(A0); // and read Z
@@ -69,7 +69,7 @@ void loop()
 // accordingly, given a pin from 0-7.
 void selectMuxPin(byte pin)
 {
-  for (int i=0; i<3; i++)
+  for (int i=0; i<5; i++)
   {
     if (pin & (1<<i))
       digitalWrite(selectPins[i], HIGH);

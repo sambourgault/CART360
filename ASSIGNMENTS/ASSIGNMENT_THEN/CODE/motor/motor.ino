@@ -4,7 +4,7 @@ const int SENSE_PIN = 0;
 int step_number = 0;    // which step the motor is on
 int direction = 0;      // motor direction
 int last_step_time = 0; // time stamp in us of the last step taken
-int number_of_steps = number_of_steps; // total number of steps for this motor
+//int number_of_steps = number_of_steps; // total number of steps for this motor
 
 // Arduino pins for the motor control connection:
 int motor_pin_1 = 8;
@@ -54,26 +54,26 @@ void setup() {
   pinMode(motor_pin_3, OUTPUT);
   pinMode(motor_pin_4, OUTPUT);
 
-  pinMode(motor_pin_5, OUTPUT);
+ /* pinMode(motor_pin_5, OUTPUT);
   pinMode(motor_pin_6, OUTPUT);
   pinMode(motor_pin_7, OUTPUT);
-  pinMode(motor_pin_8, OUTPUT);
+  pinMode(motor_pin_8, OUTPUT);*/
 
   //activate pump pin
-  pinMode(pump_pin1, OUTPUT);
-  pinMode(pump_pin2, OUTPUT);
+  /*pinMode(pump_pin1, OUTPUT);
+  pinMode(pump_pin2, OUTPUT);*/
 
   startTime1 = millis();
   changeDirectionAfter1 = random(2000, 6000);
-  startTime2 = millis();
-  changeDirectionAfter2 = random(2000, 6000);
+  /*startTime2 = millis();
+  changeDirectionAfter2 = random(2000, 6000);*/
 
   Serial.begin(9600);
   //Serial.begin(19200);
 }
 
 void loop() {
-  int rawSenseVal = analogRead(SENSE_PIN);
+  /*int rawSenseVal = analogRead(SENSE_PIN);
   runningAverageBuffer[nextCount] = rawSenseVal;
   nextCount++;
 
@@ -87,7 +87,7 @@ void loop() {
   }
 
   int averageVal = currentSum / RUNNING_SAMPLES;
-  Serial.println(averageVal);
+  Serial.println(averageVal);*/
 
   // motors are activated when people are close enough.
   //if (averageVal < 100) {
@@ -99,10 +99,10 @@ void loop() {
         digitalWrite(motor_pin_3, HIGH);
         digitalWrite(motor_pin_4, LOW);
 
-        digitalWrite(motor_pin_5, HIGH);
+        /*digitalWrite(motor_pin_5, HIGH);
         digitalWrite(motor_pin_6, LOW);
         digitalWrite(motor_pin_7, HIGH);
-        digitalWrite(motor_pin_8, LOW);
+        digitalWrite(motor_pin_8, LOW);*/
         break;
       case 1:  // 0110
         digitalWrite(motor_pin_1, LOW);
@@ -110,10 +110,10 @@ void loop() {
         digitalWrite(motor_pin_3, HIGH);
         digitalWrite(motor_pin_4, LOW);
 
-        digitalWrite(motor_pin_5, LOW);
+        /*digitalWrite(motor_pin_5, LOW);
         digitalWrite(motor_pin_6, HIGH);
         digitalWrite(motor_pin_7, HIGH);
-        digitalWrite(motor_pin_8, LOW);
+        digitalWrite(motor_pin_8, LOW);*/
         break;
       case 2:  //0101
         digitalWrite(motor_pin_1, LOW);
@@ -121,10 +121,10 @@ void loop() {
         digitalWrite(motor_pin_3, LOW);
         digitalWrite(motor_pin_4, HIGH);
 
-        digitalWrite(motor_pin_5, LOW);
+        /*digitalWrite(motor_pin_5, LOW);
         digitalWrite(motor_pin_6, HIGH);
         digitalWrite(motor_pin_7, LOW);
-        digitalWrite(motor_pin_8, HIGH);
+        digitalWrite(motor_pin_8, HIGH);*/
         break;
       case 3:  //1001
         digitalWrite(motor_pin_1, HIGH);
@@ -132,10 +132,10 @@ void loop() {
         digitalWrite(motor_pin_3, LOW);
         digitalWrite(motor_pin_4, HIGH);
 
-        digitalWrite(motor_pin_5, HIGH);
+       /* digitalWrite(motor_pin_5, HIGH);
         digitalWrite(motor_pin_6, LOW);
         digitalWrite(motor_pin_7, LOW);
-        digitalWrite(motor_pin_8, HIGH);
+        digitalWrite(motor_pin_8, HIGH);*/
         break;
     }
 
@@ -147,10 +147,10 @@ void loop() {
         digitalWrite(motor_pin_3, HIGH);
         digitalWrite(motor_pin_4, LOW);
 
-        digitalWrite(motor_pin_5, HIGH);
+        /*digitalWrite(motor_pin_5, HIGH);
         digitalWrite(motor_pin_6, LOW);
         digitalWrite(motor_pin_7, HIGH);
-        digitalWrite(motor_pin_8, LOW);
+        digitalWrite(motor_pin_8, LOW);*/
         break;
       case 1:  // 0110
         digitalWrite(motor_pin_1, LOW);
@@ -158,10 +158,10 @@ void loop() {
         digitalWrite(motor_pin_3, HIGH);
         digitalWrite(motor_pin_4, LOW);
 
-        digitalWrite(motor_pin_5, LOW);
+       /* digitalWrite(motor_pin_5, LOW);
         digitalWrite(motor_pin_6, HIGH);
         digitalWrite(motor_pin_7, HIGH);
-        digitalWrite(motor_pin_8, LOW);
+        digitalWrite(motor_pin_8, LOW);*/
         break;
       case 2:  //0101
         digitalWrite(motor_pin_1, LOW);
@@ -169,10 +169,10 @@ void loop() {
         digitalWrite(motor_pin_3, LOW);
         digitalWrite(motor_pin_4, HIGH);
 
-        digitalWrite(motor_pin_5, LOW);
+       /* digitalWrite(motor_pin_5, LOW);
         digitalWrite(motor_pin_6, HIGH);
         digitalWrite(motor_pin_7, LOW);
-        digitalWrite(motor_pin_8, HIGH);
+        digitalWrite(motor_pin_8, HIGH);*/
         break;
       case 3:  //1001
         digitalWrite(motor_pin_1, HIGH);
@@ -180,14 +180,14 @@ void loop() {
         digitalWrite(motor_pin_3, LOW);
         digitalWrite(motor_pin_4, HIGH);
 
-        digitalWrite(motor_pin_5, HIGH);
+        /*digitalWrite(motor_pin_5, HIGH);
         digitalWrite(motor_pin_6, LOW);
         digitalWrite(motor_pin_7, LOW);
-        digitalWrite(motor_pin_8, HIGH);
+        digitalWrite(motor_pin_8, HIGH);*/
         break;
     }
 
-    delay(50);
+    delay(100);
 
     if (changeDirectionMotor1) {
       // turn forward
