@@ -47,18 +47,18 @@ void setup()
   pinMode(zInput, INPUT); // Set up Z as an input
 
   // Print the header:
-  //Serial.println("Y0\tY1\tY2\tY3\tY4\tY5\tY6\tY7");
-  //Serial.println("---\t---\t---\t---\t---\t---\t---\t---");
+  Serial.println("Y0\tY1\tY2\tY3\tY4\tY5\tY6\tY7");
+  Serial.println("---\t---\t---\t---\t---\t---\t---\t---");
 }
 
 void loop() 
 {
   // Loop through all eight pins.
-  for (byte pin=0; pin<5; pin++)
+  for (byte pin=0; pin<7; pin++)
   {
     selectMuxPin(pin); // Select one at a time
     int inputValue = analogRead(A0); // and read Z
-    Serial.print(String(inputValue) + " ");
+    Serial.print(String(inputValue) + "\t");
     //Serial.println(String(inputValue));
   }
   Serial.println();
@@ -69,7 +69,7 @@ void loop()
 // accordingly, given a pin from 0-7.
 void selectMuxPin(byte pin)
 {
-  for (int i=0; i<5; i++)
+  for (int i=0; i<7; i++)
   {
     if (pin & (1<<i))
       digitalWrite(selectPins[i], HIGH);

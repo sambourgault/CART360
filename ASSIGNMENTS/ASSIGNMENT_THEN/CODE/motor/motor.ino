@@ -12,10 +12,10 @@ int motor_pin_2 = 9;
 int motor_pin_3 = 10;
 int motor_pin_4 = 11;
 // Arduino pins for the motor2 control connection:
-int motor_pin_5 = 2;
+/*int motor_pin_5 = 2;
 int motor_pin_6 = 3;
 int motor_pin_7 = 5;
-int motor_pin_8 = 6;
+int motor_pin_8 = 6;*/
 
 unsigned long startTime1;
 unsigned long startTime2;
