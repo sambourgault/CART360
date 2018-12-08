@@ -6,4 +6,4 @@
 
 Technically, this piece uses seven photocells connected to a multiplexor that is feeding data to an Arduino. Each resistance is installed on a gear using a system of ball bearings in order for the rotation of the sensor to occur without entangling the wires. The varying amount of light reaching the photocells changes their resistance which triggers the playback of multiple buffers in Max/MSP. The amplitude, the length and the playback speed of each sound vary according to the amount of light on the photocells. When the Arduino detects variations on the photocells, it enables the motor connected to the gears which changes the internal configuration of the machine.
 
-![randomPlaygroundMemories](http://url/to/img.png)
+![randomPlaygroundMemories](https://github.com/sambourgault/CART360/blob/master/ASSIGNMENTS/ASSIGNMENT_THEN/rpm1.png)
