@@ -1,8 +1,5 @@
-/////////////////////
-// Pin Definitions //
-/////////////////////
+// pin definitions for multiplexer
 int selectPins[3] = {2, 3, 4}; // S0~2, S1~3, S2~4
-int zOutput = 5;
 int zInput = A0; // Connect common (Z) to A0 (analog input)
 
 // Arduino pins for the motor control connection:
@@ -11,46 +8,17 @@ int motor_pin_2 = 9;
 int motor_pin_3 = 10;
 int motor_pin_4 = 11;
 
-//Average to note interaction
+//number of photocells connected to the multiplexer
 int numberOfPhotocell = 7;
+// state of interaction
 bool interaction = false;
+// arbitrary noise value
 int noise = 50;
+// previous values of the photocells from the multiplexer
 int prevValues[7] = {0, 0, 0, 0, 0, 0, 0};
-
-const int RUNNING_SAMPLES = 16;
-const int SENSE_PIN = 0;
-
-int step_number = 0;    // which step the motor is on
-int direction = 0;      // motor direction
-int last_step_time = 0;
-unsigned long startTime1;
-unsigned long startTime2;
-unsigned long changeDirectionAfter1;
-unsigned long changeDirectionAfter2;
-bool changeDirectionMotor1 = true;
-bool changeDirectionMotor2 = true;
-
-// pump
-#define pump_pin1 12
-#define pump_pin2 13
-
-#define forward  0
-#define normal 5
-
-int speeed = 2000;
-int direcshen = 0;
-
-// When there are 4 pins, set the others to 0:
-//int motor_pin_5 = 0;
-
-// pin_count is used by the stepMotor() method:
-int pin_count = 4;
+// motor state
 int thisStep = 0;
-int thisStep2 = 0;
 
-int runningAverageBuffer[RUNNING_SAMPLES];
-
-int nextCount = 0;
 
 void setup() {
   // Set up the select pins as outputs:
@@ -68,40 +36,33 @@ void setup() {
   pinMode(motor_pin_3, OUTPUT);
   pinMode(motor_pin_4, OUTPUT);
 
-  startTime1 = millis();
-  changeDirectionAfter1 = random(2000, 6000);
-
+  // begin serial communication
   Serial.begin(9600);
-  //Serial.begin(19200);
 }
 
 
 void loop() {
-  // Loop through all eight pins.
+  // Loop through seven pins and print the value to the serial
   interaction = false;
-  for (byte pin = 0; pin < 7; pin++)
+  for (byte pin = 0; pin < numberOfPhotocell; pin++)
   {
     selectMuxPin(pin); // Select one at a time
     int inputValue = analogRead(A0); // and read Z
     Serial.print(String(inputValue) + " ");
-
+    // check for interaction, if the previous value is greater than the noise, there is interaction
     if (abs(prevValues[pin] - inputValue) > noise) {
       interaction = (interaction || true);
     }
     prevValues[pin] = inputValue;
   }
-
+  // print a new line
   Serial.println();
 
-  /*if (interaction) {
-    Serial.println("interaction true" );
-  } else {
-    Serial.println("interaction false" );
-  }*/
 
-  //interaction
+
+  //if users are interacting with the machine
   if (interaction) {
-    // motors are activated when people are close enough.
+    // the motor is activated
     switch (thisStep) {
       case 0:  // 1010
         digitalWrite(motor_pin_1, HIGH);
@@ -128,58 +89,10 @@ void loop() {
         digitalWrite(motor_pin_4, HIGH);
         break;
     }
-
-    // motor 2:
-    switch (thisStep2) {
-      case 0:  // 1010
-        digitalWrite(motor_pin_1, HIGH);
-        digitalWrite(motor_pin_2, LOW);
-        digitalWrite(motor_pin_3, HIGH);
-        digitalWrite(motor_pin_4, LOW);
-
-        break;
-      case 1:  // 0110
-        digitalWrite(motor_pin_1, LOW);
-        digitalWrite(motor_pin_2, HIGH);
-        digitalWrite(motor_pin_3, HIGH);
-        digitalWrite(motor_pin_4, LOW);
-        break;
-      case 2:  //0101
-        digitalWrite(motor_pin_1, LOW);
-        digitalWrite(motor_pin_2, HIGH);
-        digitalWrite(motor_pin_3, LOW);
-        digitalWrite(motor_pin_4, HIGH);
-        break;
-      case 3:  //1001
-        digitalWrite(motor_pin_1, HIGH);
-        digitalWrite(motor_pin_2, LOW);
-        digitalWrite(motor_pin_3, LOW);
-        digitalWrite(motor_pin_4, HIGH);
-        break;
-    }
-
+    // add delay to slow the rotation
     delay(200);
-
-
-    if (changeDirectionMotor1) {
-      // turn forward
-      thisStep = (thisStep + 1) % 4;
-    } else {
-      // turn backward
-      thisStep = ((thisStep - 1) + 4) % 4;
-      // 0 - 3 // 3 - 2 // 2 - 1 // 1 - 0 //
-    }
-    // }
-
-    if (changeDirectionMotor2) {
-      // turn forward
-      thisStep2 = (thisStep2 + 1) % 4;
-    } else {
-      // turn backward
-      thisStep2 = ((thisStep2 - 1) + 4) % 4;
-      // 0 - 3 // 3 - 2 // 2 - 1 // 1 - 0 //
-    }
-
+    // change motor state
+    thisStep = (thisStep + 1) % 4;
   }
 }
 
